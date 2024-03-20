@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1059007275144",
+    "project_id": "mynotes-by-vicky16",
+    "storage_bucket": "mynotes-by-vicky16.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1059007275144:android:c51fc1a2792e4b4b0cff3d",
+        "android_client_info": {
+          "package_name": "com.Vicky.mynotes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDEmHmsOXVkpYvwsF2j6s2lDjkvs-ItbG0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
