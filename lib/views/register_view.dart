@@ -1,9 +1,8 @@
 // 19/03/2024
 
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:mynotes/firebase_options.dart';
+
 
 // Creates a stateful widget for stateful widget
 class RegisterView extends StatefulWidget {
@@ -54,26 +53,10 @@ class _RegisterViewState extends State<RegisterView> {
     // Body Section Creates a Register Button with two parameters + Two input boxes for username nad password
     // FutureBuider is used to build a future, this future ensures that firebase is initialized before the app starts running
 
-    body: FutureBuilder(
+    body: Column( 
 
-      future: Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-        ),  // This will include firebase to our app 
-
-      builder: (context, snapshot) // This builder parameter is a default arguement
-      {     
-
-      // The arguement snapshot defines the state of the future. We pass it's value to switch statement  
-      switch(snapshot.connectionState)
-      {
-        case ConnectionState.done: { // This case refers when the Future is loaded succesfully
-
-        /* We are going  to return the entire body part (Registration screen part) to this future function. So this ensures the app
-         gets created only when we successfully initialize the future */
-
-          return   Column( 
-
-          children: [   // Textbox to enter username
+          children: [   
+              // Textbox to enter username
               TextField(
                 controller: _email, // The value entered in this box is stored in _email texteditingcontroller
           
@@ -152,22 +135,25 @@ class _RegisterViewState extends State<RegisterView> {
                 }, 
                                
                 child: const Text("Register")), // Displays the name of the button
-            ],
+
+                // This buttpn helps existing users to go to login screen
+                TextButton(onPressed: 
+
+                // We are going to use a navigator method along with our named route
+                ()
+                {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/login/', // Route name
+                  (route) => false);
+                }, 
+
+                child: const Text("Existing user? login here"))
+           
+            ], // End of children block
  
-          );
+          )
 
-        } // Switch case Connectionstate.done block
-
-        // This refers to default case of snapshot. This occurs when the future is loading or failed
-        default:
-         return const  Text("Loading");        
-      } 
-       }, // Future Builder bloc     
- 
-      ),
-
-    );
-
+      );
   }
 }
 

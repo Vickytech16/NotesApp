@@ -1,9 +1,7 @@
 // 15/03/2024
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:mynotes/firebase_options.dart';
 
 
 class LoginView extends StatefulWidget {
@@ -54,26 +52,10 @@ class _LoginViewState extends State<LoginView> {
     // Body Section Creates a Register Button with two parameters + Two input boxes for username nad password
     // FutureBuider is used to build a future, this future ensures that firebase is initialized before the app starts running
 
-    body: FutureBuilder(
+    body:  Column( 
 
-      future: Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-        ),  // This will include firebase to our app 
-
-      builder: (context, snapshot) // This builder parameter is a default arguement
-      {     
-
-      // The arguement snapshot defines the state of the future. We pass it's value to switch statement  
-      switch(snapshot.connectionState)
-      {
-        case ConnectionState.done: { // This case refers when the Future is loaded succesfully
-
-        /* We are going  to return the entire body part (Registration screen part) to this future function. So this ensures the app
-         gets created only when we successfully initialize the future */
-
-          return   Column( 
-
-          children: [   // Textbox to enter username
+          children: [   
+              // Textbox to enter username
               TextField(
                 controller: _email, // The value entered in this box is stored in _email texteditingcontroller
           
@@ -168,24 +150,54 @@ class _LoginViewState extends State<LoginView> {
                 }, 
                                
                 child: const Text("Login")), // Displays the name of the button
-            ],
+
+                // Create a button to redirect to register view
+                TextButton(
+
+                  // We are going to use a navigator method along with our named route
+                  onPressed: 
+                  ()
+
+                  {
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/register/', // Route name
+                      (route) => false);
+                  },
+
+                  child: const Text("New user?Register here"))
+
+            ], // Children block end
  
+          )
+          
           );
-
-        } // Switch case Connectionstate.done block
-
-        // This refers to default case of snapshot. This occurs when the future is loading or failed
-        default:
-         return const  Text("Loading");        
+        }  
       } 
-       }, // Future Builder bloc     
  
-      ),
-
-    );
-
-  }  
-}
+    
 
 
+
+/*  Edited code
+
+ 
+FutureBuilder(
+
+      future: Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+        ),  // This will include firebase to our app 
+
+      builder: (context, snapshot) // This builder parameter is a default arguement
+      {     
+
+      // The arguement snapshot defines the state of the future. We pass it's value to switch statement  
+      switch(snapshot.connectionState)
+      {
+        case ConnectionState.done: { // This case refers when the Future is loaded succesfully
+
+        /* We are going  to return the entire body part (Registration screen part) to this future function. So this ensures the app
+         gets created only when we successfully initialize the future */
+
+
+*/
 
