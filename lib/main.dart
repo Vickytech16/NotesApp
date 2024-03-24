@@ -1,5 +1,7 @@
 // 15/03/2024
 
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/firebase_options.dart';
@@ -53,25 +55,26 @@ class HomePage extends StatelessWidget {
       // The arguement snapshot defines the state of the future. We pass it's value to switch statement  
       switch(snapshot.connectionState)
       {
-        // This 
-        //case refers when the Future is loaded succesfully
+
+        // This case refers when the Future is loaded succesfully
         case ConnectionState.done: { 
-            return LoginView(); }
-          //   final user = FirebaseAuth.instance.currentUser; // This will return the details of current user
-          //   print(user);
+            final user = FirebaseAuth.instance.currentUser; // This will return the details of current user
+            print(user);
 
-          //   /* This is very crucial. The first part returns whether the user email is verified or not(true or false boolean values).
-          //   But the value cannot be determined beforehand, and this value can be null, so we add a nullsafety ?. 
-          //   and incase if the value is null,we cannot access it inside if else structure,so we assign default value as false using ??  */ 
-          //   if (user?.emailVerified ?? false)
-          //     LoginView();
-          //   else
-          //      return EmailVerificationView();
-          //   }       
-
-          //   return const Text("Done"); // If the firebase inclsitialization is succesful, this will return this text 
-
-          //  // This refers to default case of snapshot. This occurs when the future is loading or failed
+            // checks whether a user is logged in or not
+            if (user!=null)
+            {
+             if (user.emailVerified)
+              return const Text("Success!"); // When user is logged in and has their email verified
+             
+             else
+              return const EmailVerificationView(); // When user is logged in but not email verified
+             
+            }
+            else{
+              return const LoginView(); // When no users are logged in
+            }
+        }
          default:
              return const  Text("Loading");        
         } 
