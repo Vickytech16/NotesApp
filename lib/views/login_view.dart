@@ -2,6 +2,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import "dart:developer" as devtools show log; 
+
 
 
 class LoginView extends StatefulWidget {
@@ -106,7 +108,8 @@ class _LoginViewState extends State<LoginView> {
                       password: password1// the left side is default parameter from outside function, the right side is our password value
                       );
           
-                    print(userCredential); // print the value to the console
+                    devtools.log(userCredential.toString()); // print the value to the console
+                    Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false);
 
                   }
                   
@@ -116,35 +119,35 @@ class _LoginViewState extends State<LoginView> {
                   // This block will specifically catch only firebaseauth type errors
                   on FirebaseAuthException catch(e)
                   {
-                    print(e.code); // This will print the error code.
-                    print(e.message); // This will print the actual error message
+                    devtools.log(e.code); // This will print the error code.
+                    devtools.log(e.message.toString()); // This will print the actual error message
 
                     // We have to handle various errors by passing the error message to the switch statement
                     switch(e.code) 
                     {
                       case "invalid-credential":
-                        print("The user is not registered"); // If the entered pair is not available
+                        devtools.log("The user is not registered"); // If the entered pair is not available
                         break;
                       case "invalid-email":
-                        print("The email format is not valid"); // The email id is not in email format
+                        devtools.log("The email format is not valid"); // The email id is not in email format
                         break;
                       case "user-not-found":
-                        print("The user is not found"); // The user is a new user/not already registered
+                        devtools.log("The user is not found"); // The user is a new user/not already registered
                         break;
                       case "wrong-password":
-                        print("Enter the correct password"); // The entered password is wrong
+                        devtools.log("Enter the correct password"); // The entered password is wrong
                         break;
                       default:
-                        print("No errors");                     
+                        devtools.log("No errors");                     
                     }              
                   }
                   
                   // This is a general catch block which catches all types of exceptions
                   catch(e)
                   {
-                  print("Enter valid data"); // Print this on console
-                  print(e); // Print the error
-                  print(e.runtimeType); // Print the type of error
+                  devtools.log("Enter valid data"); // print this on console
+                  devtools.log(e.toString()); // print the error
+                  devtools.log(e.runtimeType.toString()); // Print the type of error
                   }  
 
                 }, 
@@ -174,30 +177,3 @@ class _LoginViewState extends State<LoginView> {
         }  
       } 
  
-    
-
-
-
-/*  Edited code
-
- 
-FutureBuilder(
-
-      future: Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-        ),  // This will include firebase to our app 
-
-      builder: (context, snapshot) // This builder parameter is a default arguement
-      {     
-
-      // The arguement snapshot defines the state of the future. We pass it's value to switch statement  
-      switch(snapshot.connectionState)
-      {
-        case ConnectionState.done: { // This case refers when the Future is loaded succesfully
-
-        /* We are going  to return the entire body part (Registration screen part) to this future function. So this ensures the app
-         gets created only when we successfully initialize the future */
-
-
-*/
-

@@ -31,6 +31,7 @@ void main() {
       routes: {
         '/login/': (context) => const LoginView(), // the route "/login/" acts as a route to loginview screen
         '/register/': (context) => const RegisterView(), // the route "/register/" acts as a route to registerview screen
+        '/notes/':(context) => const NotesView() // route for Notesview
       },
 
     ));

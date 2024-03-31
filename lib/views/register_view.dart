@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import "dart:developer" as devtools show log; 
 
 // Creates a stateful widget for stateful widget
 class RegisterView extends StatefulWidget {
@@ -107,7 +107,7 @@ class _RegisterViewState extends State<RegisterView> {
                       password: password1// the left side is default parameter from outside function, the right side is our password value
                       );
           
-                    print(userCredential); // print the value to the console
+                    devtools.log(userCredential.toString()); // print the value to the console
 
                   } 
                  
@@ -115,18 +115,18 @@ class _RegisterViewState extends State<RegisterView> {
                   // This will catch all methods that are of type firebaseauth, like account already exists error
                   on FirebaseAuthException catch(e)
                   {
-                   print(e.code);
+                   devtools.log(e.code);
 
                    switch(e.code)
                    {
                     case "weak-password":
-                      print("Password must be atleast 6 characters long"); // Weak password
+                      devtools.log("Password must be atleast 6 characters long"); // Weak password
                       break;
                     case "invalid-email":
-                      print("The email format is not valid"); // The format is wrong
+                      devtools.log("The email format is not valid"); // The format is wrong
                       break;
                     case "email-already-in-use":
-                      print("The email is already in use"); // The email is already used by another user
+                      devtools.log("The email is already in use"); // The email is already used by another user
                       break;                                    
                    }
                   }
