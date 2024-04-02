@@ -3,7 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import "dart:developer" as devtools show log; 
-
+import "package:mynotes/utilities/show_error_dialog.dart";
 
 
 class LoginView extends StatefulWidget {
@@ -122,32 +122,31 @@ class _LoginViewState extends State<LoginView> {
                     devtools.log(e.code); // This will print the error code.
                     devtools.log(e.message.toString()); // This will print the actual error message
 
-                    // We have to handle various errors by passing the error message to the switch statement
+                    //  We have to handle various errors by passing the error message to the switch statement
                     switch(e.code) 
                     {
-                      case "invalid-credential":
-                        devtools.log("The user is not registered"); // If the entered pair is not available
-                        break;
                       case "invalid-email":
-                        devtools.log("The email format is not valid"); // The email id is not in email format
+                        await showErrorDialog(context,"The entered e-mail format is invalid");// The email id is not in email format
                         break;
                       case "user-not-found":
-                        devtools.log("The user is not found"); // The user is a new user/not already registered
+                        await showErrorDialog(context,"The user is not registered");// The user is a new user/not already registered
                         break;
                       case "wrong-password":
-                        devtools.log("Enter the correct password"); // The entered password is wrong
+                        await showErrorDialog(context,"The password is wrong"); // The entered password is wrong
                         break;
+                      case "invalid-credential":
+                        await showErrorDialog(context,"Invalid credentials"); // If the entered pair is not available
+                        break;                       
                       default:
-                        devtools.log("No errors");                     
+                        await showErrorDialog(context,"An unknown error occured! ${e.code}"); // Handles all other firebaseAuth exception                 
                     }              
                   }
                   
                   // This is a general catch block which catches all types of exceptions
                   catch(e)
                   {
-                  devtools.log("Enter valid data"); // print this on console
-                  devtools.log(e.toString()); // print the error
-                  devtools.log(e.runtimeType.toString()); // Print the type of error
+                    await showErrorDialog(context,"An unknown error occured! ${e.toString()}"); // Throws a generic exception
+
                   }  
 
                 }, 
@@ -177,3 +176,4 @@ class _LoginViewState extends State<LoginView> {
         }  
       } 
  
+

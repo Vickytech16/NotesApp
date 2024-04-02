@@ -41,8 +41,20 @@ class _EmailVerificationViewState extends State<EmailVerificationView> {
           }, 
           
           // This will display the name of the button
-          child: const Text("Verify"))
+          child: const Text("Verify")
+          ),
+
+          // Create a button that allows user to logout from this screen if they accidentally logged in with a unowned email
+          TextButton(onPressed: 
+          ()
+          async {
+                  await FirebaseAuth.instance.signOut(); // This will logout the client from the firebase
+                  Navigator.of(context).pushNamedAndRemoveUntil("/login/",
+                  (route) => false); // This will redirect the logged out used to the login screen
+          }, 
+          child: const Text("Logout"))
       
+
         ],),
     );
   }
