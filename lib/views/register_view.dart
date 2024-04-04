@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mynotes/utilities/show_error_dialog.dart';
 import "dart:developer" as devtools show log; 
+
 
 // Creates a stateful widget for stateful widget
 class RegisterView extends StatefulWidget {
@@ -109,6 +111,11 @@ class _RegisterViewState extends State<RegisterView> {
           
                     devtools.log(userCredential.toString()); // print the value to the console
 
+                    await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+
+                    // Redirect the registered user to email verification
+                    Navigator.of(context).pushNamed('/verifyemail/');
+ 
                   } 
                  
                   
@@ -120,15 +127,22 @@ class _RegisterViewState extends State<RegisterView> {
                    switch(e.code)
                    {
                     case "weak-password":
-                      devtools.log("Password must be atleast 6 characters long"); // Weak password
+                      await showErrorDialog(context,"Password must be atleast 6 characters long"); // Weak password
                       break;
                     case "invalid-email":
-                      devtools.log("The email format is not valid"); // The format is wrong
+                      await showErrorDialog(context,"The email format is not valid"); // The format is wrong
                       break;
                     case "email-already-in-use":
-                      devtools.log("The email is already in use"); // The email is already used by another user
-                      break;                                    
+                      await showErrorDialog(context,"The email is already in use"); // The email is already used by another user
+                      break;   
+                    default:
+                      await showErrorDialog(context,"An unknown error occured! ${e.code}"); // Handling generic firebaseAuth errors                               
                    }
+                  }
+
+                  catch(e)
+                  {
+                    await showErrorDialog(context,"An unknown error occured! ${e.toString()}");
                   }
 
                    

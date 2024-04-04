@@ -109,8 +109,18 @@ class _LoginViewState extends State<LoginView> {
                       );
           
                     devtools.log(userCredential.toString()); // print the value to the console
-                    Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false);
+                    
+                    final user=FirebaseAuth.instance.currentUser;
 
+                    // Since user is nullable, we have to check the value is not null
+                    if (user!=null)
+                    {
+                      if(user.emailVerified)
+                        { Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false); } // If emailverified, then notes view
+                      else
+                        { showVerifyEmailDialog(context, user); } // if email not verified, alertbox
+                        
+                    }
                   }
                   
                  /* As of now, this try catch block has error. The error is even if the user is not found or password is incorrect, 
@@ -146,7 +156,6 @@ class _LoginViewState extends State<LoginView> {
                   catch(e)
                   {
                     await showErrorDialog(context,"An unknown error occured! ${e.toString()}"); // Throws a generic exception
-
                   }  
 
                 }, 
@@ -176,4 +185,29 @@ class _LoginViewState extends State<LoginView> {
         }  
       } 
  
+// If the user has not verified their email, this dialog will be shown
+Future<void> showVerifyEmailDialog(BuildContext context,User user)
+{
+ return showDialog(context: context,builder: (context) {
+   
+   return AlertDialog(
+    title: const Text("An error occured"), // title
+    content: const Text("It seems like you haven't verified your email. Please verify your email first"), // content
+    
+    actions: [
 
+      // This button will send a verification mail and redirect the user
+      TextButton(
+        onPressed: () 
+        {
+         user.sendEmailVerification(); // Sends a verification mail to user
+         Navigator.of(context).pop(); // When the user returns from the verification screen, alert box will appear. To prevent this,we first pop it out.
+         Navigator.of(context).pushNamed('/verifyemail/'); // Redirect user to email verification screen
+        },
+
+        child: const Text("Take me there!"))
+    ],
+    
+   );
+ },);
+}

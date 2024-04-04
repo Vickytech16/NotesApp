@@ -28,7 +28,8 @@ class _EmailVerificationViewState extends State<EmailVerificationView> {
       body: Column(
       
         children: [
-          const Text("Verify your Email address"), // This will s.how a text asking them to verify their mail address
+          const Text("We have sent you a verification email. Check your mail and verify your account"), // This will show a text letting users know they recieved a verification mail
+          const Text("Haven't got a mail? Click below to send again"), // If the user didn't get one, this will allow them to recieve another mail
           TextButton(
           
           // This will dictate what to do once the button is pressed  
@@ -41,9 +42,11 @@ class _EmailVerificationViewState extends State<EmailVerificationView> {
           }, 
           
           // This will display the name of the button
-          child: const Text("Verify")
+          child: const Text("Send Again")
           ),
 
+          const Text("Already verified? click the button below"),
+          
           // Create a button that allows user to logout from this screen if they accidentally logged in with a unowned email
           TextButton(onPressed: 
           ()
@@ -52,7 +55,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView> {
                   Navigator.of(context).pushNamedAndRemoveUntil("/login/",
                   (route) => false); // This will redirect the logged out used to the login screen
           }, 
-          child: const Text("Logout"))
+          child: const Text("Restart"))
       
 
         ],),
