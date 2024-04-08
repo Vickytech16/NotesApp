@@ -1,7 +1,8 @@
 // 19/03/2024
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mynotes/services/auth/auth_exception.dart';
+import 'package:mynotes/services/auth/auth_services.dart';
 import 'package:mynotes/utilities/show_error_dialog.dart';
 import "dart:developer" as devtools show log; 
 
@@ -104,54 +105,45 @@ class _RegisterViewState extends State<RegisterView> {
                     /* This is a built in method which create new user with email and password values and return a future, so we used await keyword to 
                        capture the future on usercredential variable and print it */
           
-                    await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                    await AuthServices.firebase().register(
                       email: email1, // the left side is default parameter from outside function, the right side is our email value
                       password: password1// the left side is default parameter from outside function, the right side is our password value
                       );
           
                     devtools.log(userCredential.toString()); // print the value to the console
 
-                    await FirebaseAuth.instance.currentUser?.sendEmailVerification();
+                    await AuthServices.firebase().sendEmailVerification(); // Sneds the verification email to the user
 
                     // Redirect the registered user to email verification
                     Navigator.of(context).pushNamed('/verifyemail/');
  
-                  } 
-                 
+                  }              
                   
                   // This will catch all methods that are of type firebaseauth, like account already exists error
-                  on FirebaseAuthException catch(e)
-                  {
-                   devtools.log(e.code);
 
-                   switch(e.code)
-                   {
-                    case "weak-password":
-                      await showErrorDialog(context,"Password must be atleast 6 characters long"); // Weak password
-                      break;
-                    case "invalid-email":
-                      await showErrorDialog(context,"The email format is not valid"); // The format is wrong
-                      break;
-                    case "email-already-in-use":
-                      await showErrorDialog(context,"The email is already in use"); // The email is already used by another user
-                      break;   
-                    default:
-                      await showErrorDialog(context,"An unknown error occured! ${e.code}"); // Handling generic firebaseAuth errors                               
-                   }
+                  on InvalidEmailAuthException {
+                      await showErrorDialog(context,"The entered e-mail format is invalid"); // The email id is not in email format
+                  } 
+
+                  on EmailAlreadyInUseAuthException {
+                      await showErrorDialog(context,"The user is already registered");// The user is a new user/not already registered
                   }
 
-                  catch(e)
-                  {
-                    await showErrorDialog(context,"An unknown error occured! ${e.toString()}");
+                  on WeakPasswordAuthException {
+                      await showErrorDialog(context,"The password is wrong"); // The entered password is wrong
                   }
 
+                  on GenericAuthException {
+                      await showErrorDialog(context,"An unknown error occured!"); // Handles all other firebaseAuth exception                 
+                  } 
+                  
                    
                 }, 
                                
                 child: const Text("Register")), // Displays the name of the button
 
                 // This buttpn helps existing users to go to login screen
-                TextButton(onPressed: 
+                TextButton( onPressed: 
 
                 // We are going to use a navigator method along with our named route
                 ()

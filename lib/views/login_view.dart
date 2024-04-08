@@ -1,7 +1,9 @@
 // 15/03/2024
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import "package:mynotes/services/auth/auth_exception.dart";
+import "package:mynotes/services/auth/auth_services.dart";
+import "package:mynotes/services/auth/auth_user.dart";
 import "dart:developer" as devtools show log; 
 import "package:mynotes/utilities/show_error_dialog.dart";
 
@@ -83,7 +85,7 @@ class _LoginViewState extends State<LoginView> {
               ), 
           
           
-              // Creates the Register Button
+              // Creates the Login Button
               TextButton(
           
                 onPressed: () // Tells what to do once the button is clicked
@@ -103,64 +105,54 @@ class _LoginViewState extends State<LoginView> {
                     // This method is used to sign in with our email and password, and return the user credential, similar to what we did in create user method
                     // This is a asynchronous method, so we used await keyword
                     
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    // We are using the login method we created in Auth provider file, and linking it via Auth services file
+                    await AuthServices.firebase().login(
                       email: email1, // the left side is default parameter from outside function, the right side is our email value
                       password: password1// the left side is default parameter from outside function, the right side is our password value
                       );
           
                     devtools.log(userCredential.toString()); // print the value to the console
                     
-                    final user=FirebaseAuth.instance.currentUser;
+                    final user=AuthServices.firebase().currentUser;
 
                     // Since user is nullable, we have to check the value is not null
                     if (user!=null)
                     {
-                      if(user.emailVerified)
+                      if(user.isEmailVerified)
                         { Navigator.of(context).pushNamedAndRemoveUntil('/notes/', (route) => false); } // If emailverified, then notes view
                       else
                         { showVerifyEmailDialog(context, user); } // if email not verified, alertbox
                         
                     }
                   }
-                  
-                 /* As of now, this try catch block has error. The error is even if the user is not found or password is incorrect, 
-                  the error message shown is "invalid-credential". Date : 18/03/2024. */
+        
+                  // We handle exceptions by referring to the classes we created in auth_exceptions.dart file
 
-                  // This block will specifically catch only firebaseauth type errors
-                  on FirebaseAuthException catch(e)
-                  {
-                    devtools.log(e.code); // This will print the error code.
-                    devtools.log(e.message.toString()); // This will print the actual error message
+                  on InvalidEmailAuthException {
+                      await showErrorDialog(context,"The entered e-mail format is invalid"); // The email id is not in email format
+                  } 
 
-                    //  We have to handle various errors by passing the error message to the switch statement
-                    switch(e.code) 
-                    {
-                      case "invalid-email":
-                        await showErrorDialog(context,"The entered e-mail format is invalid");// The email id is not in email format
-                        break;
-                      case "user-not-found":
-                        await showErrorDialog(context,"The user is not registered");// The user is a new user/not already registered
-                        break;
-                      case "wrong-password":
-                        await showErrorDialog(context,"The password is wrong"); // The entered password is wrong
-                        break;
-                      case "invalid-credential":
-                        await showErrorDialog(context,"Invalid credentials"); // If the entered pair is not available
-                        break;                       
-                      default:
-                        await showErrorDialog(context,"An unknown error occured! ${e.code}"); // Handles all other firebaseAuth exception                 
-                    }              
+                  on UserNotFoundAuthException {
+                      await showErrorDialog(context,"The user is not registered");// The user is a new user/not already registered
                   }
-                  
-                  // This is a general catch block which catches all types of exceptions
-                  catch(e)
-                  {
-                    await showErrorDialog(context,"An unknown error occured! ${e.toString()}"); // Throws a generic exception
-                  }  
 
-                }, 
+                  on InvalidCredentialAuthException {
+                      await showErrorDialog(context,"Invalid credentials"); // If the entered pair is not available
+                  }
+
+                  on WrongPasswordAuthException {
+                      await showErrorDialog(context,"The password is wrong"); // The entered password is wrong
+                  }
+
+                  on GenericAuthException {
+                      await showErrorDialog(context,"An unknown error occured!"); // Handles all other firebaseAuth exception                 
+                  } 
+                  
+
+                }, // End of onpressed block   
                                
                 child: const Text("Login")), // Displays the name of the button
+
 
                 // Create a button to redirect to register view
                 TextButton(
@@ -184,9 +176,10 @@ class _LoginViewState extends State<LoginView> {
           );
         }  
       } 
+
  
 // If the user has not verified their email, this dialog will be shown
-Future<void> showVerifyEmailDialog(BuildContext context,User user)
+Future<void> showVerifyEmailDialog(BuildContext context,Authuser user)
 {
  return showDialog(context: context,builder: (context) {
    
@@ -200,7 +193,7 @@ Future<void> showVerifyEmailDialog(BuildContext context,User user)
       TextButton(
         onPressed: () 
         {
-         user.sendEmailVerification(); // Sends a verification mail to user
+         AuthServices.firebase().sendEmailVerification(); // Sends a verification mail to user
          Navigator.of(context).pop(); // When the user returns from the verification screen, alert box will appear. To prevent this,we first pop it out.
          Navigator.of(context).pushNamed('/verifyemail/'); // Redirect user to email verification screen
         },
@@ -209,5 +202,6 @@ Future<void> showVerifyEmailDialog(BuildContext context,User user)
     ],
     
    );
- },);
+  },
+ );
 }

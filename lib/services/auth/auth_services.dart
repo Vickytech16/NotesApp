@@ -5,12 +5,14 @@
 
 import 'package:mynotes/services/auth/auth_provider.dart';
 import 'package:mynotes/services/auth/auth_user.dart';
+import 'package:mynotes/services/auth/firebase_auth_provider.dart';
 
 class AuthServices implements authProvider
 {
   final authProvider provider; // This variable is of type auth provider. It acts as an instance of authprovider and helps us to access all of its methods.
   const AuthServices(this.provider); // We use the authprovider variable to link between auth provider and auth services.
 
+  factory AuthServices.firebase() => AuthServices(FirebaseAuthProvider()); // We are creating factory constructor and assigning it.
 
   // implementation of currentuser
   @override
@@ -41,5 +43,9 @@ class AuthServices implements authProvider
   @override
   Future<void> sendEmailVerification() 
     => provider.sendEmailVerification();
+    
+  @override
+  Future<void> initialize() 
+    => provider.initialize();      
   
 }

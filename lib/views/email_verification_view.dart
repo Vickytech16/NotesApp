@@ -1,7 +1,7 @@
 // 25/03/2023
 
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:mynotes/services/auth/auth_services.dart';
 
 
 // We are creating a widget for Email verification screen
@@ -34,10 +34,9 @@ class _EmailVerificationViewState extends State<EmailVerificationView> {
           
           // This will dictate what to do once the button is pressed  
           onPressed : 
-          () // We use async and await here because the sendEmailverification() method returns a future.
+          () 
           async {
-            final user = FirebaseAuth.instance.currentUser; // This will return the details of current user
-            await user?.sendEmailVerification(); // We use null safety here since the Email may not exist, and in that case null is returned
+            await AuthServices.firebase().sendEmailVerification(); // Sends the verification email to the user
             
           }, 
           
@@ -51,7 +50,7 @@ class _EmailVerificationViewState extends State<EmailVerificationView> {
           TextButton(onPressed: 
           ()
           async {
-                  await FirebaseAuth.instance.signOut(); // This will logout the client from the firebase
+                  await AuthServices.firebase().logout(); // This will logout the client from the firebase
                   Navigator.of(context).pushNamedAndRemoveUntil("/login/",
                   (route) => false); // This will redirect the logged out used to the login screen
           }, 
@@ -64,35 +63,3 @@ class _EmailVerificationViewState extends State<EmailVerificationView> {
 }
 
 
-
-
-// Temporarily cut off code
-
-/*
-
-Scaffold(
-      
-// Part 1
-
-     // Appbar for Email Verification view
-     appBar:  AppBar(
-      title: const Text("Email Verification Screen"),
-      backgroundColor: Colors.green,
-      foregroundColor: Colors.white,
-     ),
-
-     // Body for Email Verification view
-     body: 
-
- // Part 2
-
-
-            // This entire code is to push the email verification view screen when the user is not verified. 
-            // More insight needed        
-            {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => const EmailVerificationView())
-              );        
-
-*/
