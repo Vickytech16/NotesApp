@@ -5,6 +5,7 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/enums/logout.dart';
 import 'package:mynotes/services/auth/auth_services.dart';
+import 'package:mynotes/services/crud/notes_service.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -14,6 +15,24 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
+
+  late final NotesService _notesService; // We are creating an instance of noteservice class
+  String  get userEmail => AuthServices.firebase().currentUser!.email!; // We are adding ! because we already know the email value cannot be null in notes viewb (If email is null we never got to notes view in first place)
+
+  // We are creating a initstate upon opening the Main UI where we open the database
+  @override
+  void initState() {
+    _notesService = NotesService();
+    _notesService.open();
+    super.initState();
+  }
+
+  // We close the database upon closing our main UI
+  @override
+  void dispose() {
+    _notesService.close();
+    super.dispose();
+  }
   @override
   Widget build(BuildContext context) {
 
@@ -65,13 +84,37 @@ class _NotesViewState extends State<NotesView> {
         ], // End of actions block
       ),
 
-      body: const Column(
-        children: 
-        [
-          Text("No notes here!")
-        ]
-         
-        ),
+      body: FutureBuilder( // This future builder contains the main UI of our application
+        future: _notesService.getOrCreateUser(email: userEmail), // This method will create and initialize the user on database
+
+         builder: (context, snapshot) {
+           
+           // We are calling switch on snapshot
+           switch(snapshot.connectionState){      
+
+             // This is when the Future is loaded successfully
+             case ConnectionState.done:
+
+              return StreamBuilder( // When the future is loaded successfully, we are returning the stream builder
+               stream: _notesService.allNotes, // We are calling the all notes getter
+
+               builder: (context, snapshot)
+               {
+                 switch (snapshot.connectionState){
+                   case ConnectionState.waiting: // In stream builder the process is continuos so we have to catch the waiting statement instead of done
+                    return const Text("Notes are loadin buddy");
+                   default:
+                    return const CircularProgressIndicator();
+                 }
+               }   
+              );
+
+             default:
+              return const CircularProgressIndicator(); // While the app is loading
+           }
+         }
+      ),
+
     );
   }
 }

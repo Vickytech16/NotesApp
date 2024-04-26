@@ -134,7 +134,7 @@ class MockAuthProvider implements authProvider{
     if (email=="foo@bar.com") throw EmailAlreadyInUseAuthException();
     if (password=="foobar") throw WrongPasswordAuthException();
 
-  const user = Authuser(isEmailVerified: false); // Creating a mock user
+  const user = Authuser(isEmailVerified: false, email: 'foo@bar.com'); // Creating a mock user
   _user=user; // Assigning the mock user to our user variable
   return Future.value(_user); // We return the future of our mock user
   }
@@ -164,7 +164,7 @@ class MockAuthProvider implements authProvider{
 
     if (_user==null) throw UserNotFoundAuthException(); // Checking we actually have a user
 
-    const newuser=Authuser(isEmailVerified: true); // We create a new user whose email verified value is true
+    const newuser=Authuser(isEmailVerified: true, email: 'foo@bar.com'); // We create a new user whose email verified value is true
     _user=newuser; // If we do have a user, we set their emailverified to true. For that we have to create new user since we can't change the value inside the method parameter.
   }
 
